@@ -1,10 +1,12 @@
 package lyc.chapter1;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import com.google.common.base.*;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 import org.junit.Test;
+
+import java.util.Collections;
+import java.util.List;
 
 
 public class BasicTool {
@@ -23,7 +25,7 @@ public class BasicTool {
     public void preconditions2() {
         String str = null;//"d";
         String newStr = Preconditions.checkNotNull(str, "str was expected not null");
-        System.out.println(newStr);
+        println(newStr);
     }
 
 
@@ -33,29 +35,53 @@ public class BasicTool {
     @Test
     public void optional() {
         Optional<Integer> optional = Optional.absent();
-        System.out.println(optional.isPresent());
-        System.out.println(optional.or(3));
-        System.out.println(optional.orNull());
+        println(optional.isPresent());
+        println(optional.or(3));
+        println(optional.orNull());
         optional = Optional.of(5);
-        System.out.println(optional.or(3));
-        System.out.println(optional.asSet());
+        println(optional.or(3));
+        println(optional.asSet());
+    }
+
+
+    @Test
+    public void ordering() {
+        List<ExampleBean> list = Lists.newArrayList(new ExampleBean(1, "dd"), new ExampleBean(3, "aa"));
+        /** 排序  流式调用， 指定排序类型、字段 */
+        Ordering<ExampleBean> ordering = Ordering.natural().nullsFirst().onResultOf(new Function<ExampleBean, String>() {
+            public String apply(ExampleBean foo) {
+                return foo.getName();
+            }
+        });
+
+        Collections.sort(list, ordering);
     }
 
 
     @Test
     public void other() {
         /**减少直接用Object.equal的null判断*/
-        System.out.println(Objects.equal(null, "333"));
+        println(Objects.equal(null, "333"));
         /**对传入的字段序列计算出合理的、顺序敏感的散列值。*/
         int hc = Objects.hashCode("bbbb", "aaaa");
-        System.out.println(hc);
+        println(hc);
 
+        /**toStringHelper ， 没看出怎么好用*/
         // Returns "ClassName{x=1}"
         String str = MoreObjects.toStringHelper(this).add("x", 1).toString();
-        System.out.println(str);
+        println(str);
         // Returns "MyObject{x=1}"
         str = MoreObjects.toStringHelper("MyObject").add("x", 1).toString();
-        System.out.println(str);
+        println(str);
+
+        ExampleBean bean = new ExampleBean(123, "yourName");
+        str = MoreObjects.toStringHelper(bean).toString();
+        println(str);
+    }
+
+
+    public void println(Object obj) {
+        System.out.println(obj);
     }
 
 }
